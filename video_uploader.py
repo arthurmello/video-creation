@@ -25,9 +25,6 @@ def main():
                     saida = requests.post(api_endpoint, files=arquivos).content
                 except requests.exceptions.RequestException as e:
                     print(f"Error: {e}")
-
-            #saida = requests.post(api_endpoint, files=arquivos).content
-            #saida = requests.post(api_endpoint, files=arquivos).content
         st.video(saida)
         print("--- %.2f segundos ---" % (time.time() - start_time))
 

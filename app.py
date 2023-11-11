@@ -5,12 +5,15 @@ import uuid
 import random
 
 app = Flask(__name__)
+ROOT_FOLDER="/home/arthurbmello/video-creation/videos/"
+os.chdir(ROOT_FOLDER)
 
 def criar_id_temporario():
     temp_id = str(uuid.uuid4())
     return temp_id
 
 def salvar_arquivos_enviados(arquivos_enviados, caminho_pasta):
+    caminho_pasta=ROOT_FOLDER+caminho_pasta
     # Criar a pasta de destino
     os.makedirs(caminho_pasta+'/saida', exist_ok=True)
 
@@ -21,11 +24,12 @@ def salvar_arquivos_enviados(arquivos_enviados, caminho_pasta):
         with open(caminho_arquivo, "wb") as arquivo:
             arquivo.write(arquivo_enviado.read())
         caminhos_arquivos.append(caminho_arquivo)
-    
+
     return caminhos_arquivos
 
 # Função para escolher aleatoriamente um arquivo de vídeo de uma pasta
 def escolher_video_aleatorio(pasta):
+    pasta=ROOT_FOLDER+'/'+pasta
     videos = [f for f in os.listdir(pasta) if f.endswith(".mp4")]
     if videos:
         return os.path.join(pasta, random.choice(videos))
@@ -33,12 +37,13 @@ def escolher_video_aleatorio(pasta):
         return None
 
 def criar_sequencia_videos(recortes_clientes, pasta_cliente):
+
     vinheta_entrada = "vinheta_entrada.mp4"
     pastas_recortes = ["recorte3", "recorte4", "recorte6", "recorte7", "recorte9", "recorte10"]
     vinheta_fim = "vinheta_fim.mp4"
 
     # Caminhos para os arquivos de entrada e saída
-    saida = f"{pasta_cliente}/saida/filme_personalizado.mp4"
+    saida = f"{ROOT_FOLDER}/{pasta_cliente}/saida/filme_personalizado.mp4"
 
     # Inicializar a sequência com a vinheta de entrada
     sequencia = VideoFileClip(vinheta_entrada)
@@ -78,11 +83,11 @@ def gerar_sequencia():
 
     if not arquivos:
         return jsonify({'error': 'Nenhum arquivo selecionado'}), 400
-    
+
     id_temporario = criar_id_temporario()
     pasta_cliente = f'cliente/{id_temporario}'
     arquivos_enviados = salvar_arquivos_enviados(arquivos, pasta_cliente)
-    
+
     # Chama a função criar_sequencia_videos com a lista de caminhos dos arquivos enviados
     saida = criar_sequencia_videos(arquivos_enviados, pasta_cliente)
 
